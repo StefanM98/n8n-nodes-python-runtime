@@ -21,7 +21,9 @@ export class PythonRuntime implements INodeType {
 		defaults: {
 			name: 'Python Runtime',
 		},
+		// eslint-disable-next-line n8n-nodes-base/node-class-description-inputs-wrong-regular-node
 		inputs: [NodeConnectionType.Main],
+		// eslint-disable-next-line n8n-nodes-base/node-class-description-outputs-wrong
 		outputs: [NodeConnectionType.Main],
 		properties: [
 			{
@@ -33,13 +35,13 @@ export class PythonRuntime implements INodeType {
 						name: 'Execute Script',
 						value: 'executeScript',
 						description: 'Execute Python code directly',
-						action: 'Execute Python code directly',
+						action: 'Execute python code directly',
 					},
 					{
 						name: 'Run File',
 						value: 'runFile',
 						description: 'Run a Python file',
-						action: 'Run a Python file',
+						action: 'Run a python file',
 					},
 				],
 				default: 'executeScript',
@@ -82,7 +84,6 @@ export class PythonRuntime implements INodeType {
 				type: 'string',
 				default: '',
 				description: 'Arguments to pass to the Python script',
-				required: false,
 			},
 			{
 				displayName: 'Python Path',
@@ -90,7 +91,6 @@ export class PythonRuntime implements INodeType {
 				type: 'string',
 				default: 'python3',
 				description: 'Path to Python executable (defaults to python3)',
-				required: false,
 			},
 		],
 	};
