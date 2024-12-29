@@ -1,46 +1,111 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+# n8n-nodes-python-runtime
 
-# n8n-nodes-starter
+This is an n8n community node that enables direct execution of Python scripts using the system's Python runtime within n8n workflows. This node was created for personal use to allow direct access to locally installed Python libraries and environments.
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](n8n.io). It includes the node linter and other dependencies.
+⚠️ **Security Warning**: This node executes Python code directly on the system. Use with extreme caution and only in trusted environments. Not recommended for production use without proper security measures.
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
-## Prerequisites
+[Installation](#installation)  
+[Operations](#operations)  
+[Compatibility](#compatibility)  
+[Usage](#usage)  
+[Docker Setup](#docker-setup)  
+[Resources](#resources)  
 
-You need the following installed on your development machine:
+## Installation
 
-* [git](https://git-scm.com/downloads)
-* Node.js and pnpm. Minimum version Node 18. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-  ```
-  pnpm install n8n -g
-  ```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+1. Install n8n (if you haven't already):
+```bash
+npm install n8n -g
+```
 
-## Using this starter
+2. Install this node:
+```bash
+npm install n8n-nodes-python-runtime
+```
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+3. Configure your n8n installation to use custom nodes by adding to your `n8n-config.json`:
+```json
+{
+  "nodes.include": ["n8n-nodes-python-runtime"]
+}
+```
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-   ```
-   git clone https://github.com/<your organization>/<your-repo-name>.git
-   ```
-3. Run `pnpm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `pnpm lint` to check for errors or `pnpm lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+## Operations
 
-## More information
+This node supports two main operations:
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+- **Execute Script**: Run Python code directly from the n8n workflow
+- **Run File**: Execute a Python script file from the filesystem
 
-## License
+Additional configuration options:
+- Python Path: Specify the Python executable to use
+- Command Arguments: Pass additional arguments to the Python script
 
-[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)
+## Compatibility
+
+- Requires n8n version 1.0.0 or later
+- Requires Python to be installed on the system
+- Tested with Python 3.x
+
+## Usage
+
+### Execute Script Example
+1. Add the Python Runtime node to your workflow
+2. Select "Execute Script" operation
+3. Enter your Python code in the "Python Code" field:
+```python
+import pandas as pd
+df = pd.DataFrame({'A': [1, 2, 3]})
+print(df.to_json())
+```
+
+### Run File Example
+1. Add the Python Runtime node to your workflow
+2. Select "Run File" operation
+3. Specify the path to your Python script
+4. Optionally add command line arguments
+
+## Docker Setup
+
+To use this node in a Docker environment, you'll need to create a custom n8n image that includes Python and any required Python packages. Here's an example Dockerfile:
+
+```dockerfile
+# Use the official n8n image as the base
+FROM n8nio/n8n:latest
+
+# Switch to root to install dependencies
+USER root
+
+# Install Python and pip using Alpine's package manager
+RUN apk add --no-cache python3 py3-pip
+
+# Create a virtual environment
+RUN python3 -m venv /opt/venv
+
+# Activate the virtual environment and install dependencies
+COPY requirements.txt /tmp/requirements.txt
+RUN . /opt/venv/bin/activate && pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Make the virtual environment the default for Python
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Switch back to the default non-root user
+USER node
+```
+
+## Security Considerations
+
+This node executes Python code directly on the system, which can be dangerous if misused. Consider these security implications:
+
+- The node has access to the system's filesystem
+- It can execute any Python code, including system commands
+- It has access to any installed Python packages
+- It runs with the same permissions as the n8n process
+
+For these reasons, it's recommended to:
+1. Use only in trusted environments
+2. Run n8n in a container with appropriate restrictions
+3. Limit filesystem access when using Docker
+4. Be cautious with input validation if accepting external inputs

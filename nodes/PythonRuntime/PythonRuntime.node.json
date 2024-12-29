@@ -1,0 +1,15 @@
+{
+    "node": "n8n-nodes-base.pythonRuntime",
+    "nodeVersion": "1.0",
+    "codexVersion": "1.0",
+    "categories": [
+        "Development"
+    ],
+    "resources": {
+        "primaryDocumentation": [
+            {
+                "url": ""
+            }
+        ]
+    }
+} 
